@@ -5,9 +5,7 @@ export class CreatePostDto {
   @IsNotEmpty()
   name: string;
 
-  @IsString()
-  @IsNotEmpty()
-  image: string;
+  image?: string; // S3 업로드 후 추가되기 때문에 ?로 처리
 
   @IsString()
   @IsNotEmpty()
@@ -24,19 +22,4 @@ export class CreatePostDto {
   @IsNumber()
   @IsNotEmpty()
   tomato: number;
-}
-
-export class PostResponseDto {
-  @IsOptional()
-  _id?: string;
-
-  name: string;
-  image: string;
-  content: string;
-  location: string;
-  password: number;
-  tomato: number;
-
-  @IsOptional()
-  createdAt?: Date;
 }
