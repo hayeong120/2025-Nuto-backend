@@ -10,6 +10,7 @@ import { PostService } from './post.service';
 import { CreatePostDto } from './dto/post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
+import * as AWS from 'aws-sdk'
 
 @Controller('post')
 export class PostController {
@@ -21,7 +22,7 @@ export class PostController {
     @UploadedFile() file: Express.Multer.File,
     @Body() createPostDto: CreatePostDto,
   ): Promise<{ success: boolean; message: string }> {
-    return this.postService.upload(createPostDto, file);
+    return this.postService.fileUpload(createPostDto, file);
   }
 
   @Delete('delete')
