@@ -3,16 +3,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Post, PostDocument } from '../schemas/post.schema';
 import { CreatePostDto } from './dto/post.dto';
-import { NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
-
-// AWS SDK 설정
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: 'ap-northeast-2',
-});
 
 @Injectable()
 export class PostService {
@@ -21,14 +17,22 @@ export class PostService {
 
   constructor(
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
-private configService: ConfigService,  ) {
+    private configService: ConfigService,
+  ) {
+    AWS.config.update({
+      accessKeyId: process.env.AWS_ACCESS_KEY,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      region: 'ap-northeast-2',
+    });
     this.s3 = new AWS.S3();
-    this.bucketName = this.configService.get<string>('AWS_S3_BUCKET_NAME') || 'it-show-nuto';
+    this.bucketName =
+      this.configService.get<string>('AWS_S3_BUCKET_NAME') || 'it-show-nuto';
   }
 
-
-  async fileUpload(createPostDto: CreatePostDto, file: Express.Multer.File): Promise<{ success: boolean; message: string }> {
-    console.log(this.configService.get<string>('AWS_S3_BUCKET_NAME'), process.env.AWS_ACCESS_KEY)
+  async fileUpload(
+    createPostDto: CreatePostDto,
+    file: Express.Multer.File,
+  ): Promise<{ success: boolean; message: string }> {
     try {
       const uploadParams = {
         Bucket: this.bucketName,
@@ -39,7 +43,7 @@ private configService: ConfigService,  ) {
       };
 
       const uploadResult = await this.s3.upload(uploadParams).promise();
-      
+
       const imageUrl = uploadResult.Location; // 업로드된 이미지의 URL
 
       const newPost = new this.postModel({
@@ -66,10 +70,12 @@ private configService: ConfigService,  ) {
 
     // S3에서 이미지 삭제
     try {
-      await this.s3.deleteObject({
-        Bucket: this.bucketName,
-        Key: key,
-      }).promise();
+      await this.s3
+        .deleteObject({
+          Bucket: this.bucketName,
+          Key: key,
+        })
+        .promise();
     } catch (error) {
       console.error('Error deleting image from S3:', error);
       throw new InternalServerErrorException('Failed to delete image from S3');

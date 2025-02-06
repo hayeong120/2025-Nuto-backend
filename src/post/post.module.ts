@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]), // 모델 등록
-    ConfigModule, // ConfigService 사용하려면 추가해야 함
+    ConfigModule,
   ],
   controllers: [PostController],
   providers: [PostService],
