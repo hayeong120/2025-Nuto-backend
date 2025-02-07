@@ -8,6 +8,8 @@ import { AccountModule } from './account/account.module';
 import { MypageModule } from './mypage/mypage.module';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { ConfigModule } from '@nestjs/config';
+import { Mongoose } from 'mongoose';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -17,10 +19,13 @@ import { ConfigModule } from '@nestjs/config';
     AccountModule,
     MypageModule,
     ConfigModule.forRoot({
-      cache: true,
       isGlobal: true,
+      envFilePath: `../.env`,
     }),
     NestjsFormDataModule,
+    MongooseModule.forRoot(
+      'mongodb://admin:591006@localhost:27017/nuto?authSource=admin',
+    ),
   ],
   controllers: [AppController],
   providers: [AppService],
