@@ -44,7 +44,7 @@ export class PostService {
       const fileUrls = {};
 
       for (const file of files) {
-        const folderName = file.fieldname === 'nuto' ? 'nuto' : 'polariod';
+        const folderName = file.fieldname === 'nutoImage' ? 'nuto' : 'polariod';
         const key = `image/${folderName}/${timestamp}-${file.originalname}`;
 
         const uploadParams = {
