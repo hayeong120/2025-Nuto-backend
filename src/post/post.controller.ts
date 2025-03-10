@@ -10,7 +10,6 @@ import { PostService } from './post.service';
 import { CreatePostDto } from './dto/post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
-import * as AWS from 'aws-sdk'
 
 @Controller('post')
 export class PostController {
@@ -19,10 +18,14 @@ export class PostController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file', { storage: multer.memoryStorage() }))
   async uploadPost(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile()
+    files: { nuto: Express.Multer.File[]; polariod: Express.Multer.File[] },
     @Body() createPostDto: CreatePostDto,
   ): Promise<{ success: boolean; message: string }> {
-    return this.postService.fileUpload(createPostDto, file);
+    return this.postService.fileUpload(createPostDto, [
+      files.nuto[0],
+      files.polariod[0],
+    ]);
   }
 
   @Delete('delete')

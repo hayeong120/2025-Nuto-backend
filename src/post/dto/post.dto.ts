@@ -1,15 +1,13 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreatePostDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  image?: string; // S3 업로드 후 추가되기 때문에 ?로 처리
+  polariodImage?: string; // S3 업로드 후 추가되기 때문에 ?로 처리
 
-  @IsString()
-  @IsNotEmpty()
-  content: string;
+  nutoImage?: string;
 
   @IsString()
   @IsNotEmpty()
@@ -18,8 +16,4 @@ export class CreatePostDto {
   @IsNumber()
   @IsNotEmpty()
   password: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  tomato: number;
 }

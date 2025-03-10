@@ -31,31 +31,44 @@ export class PostService {
 
   async fileUpload(
     createPostDto: CreatePostDto,
-    file: Express.Multer.File,
+    files: Express.Multer.File[],
   ): Promise<{ success: boolean; message: string }> {
     try {
-      const uploadParams = {
-        Bucket: this.bucketName,
-        Key: `image/main/${Date.now()}-${file.originalname}`,
-        Body: file.buffer,
-        ContentType: file.mimetype,
-        // ACL: 'public-read', // 파일 접근 권한 설정
-      };
+      if (files.length !== 2) {
+        throw new InternalServerErrorException(
+          'Exactly two files are required',
+        );
+      }
 
-      const uploadResult = await this.s3.upload(uploadParams).promise();
+      const timestamp = Date.now();
+      const fileUrls = {};
 
-      const imageUrl = uploadResult.Location; // 업로드된 이미지의 URL
+      for (const file of files) {
+        const folderName = file.fieldname === 'nuto' ? 'nuto' : 'polariod';
+        const key = `image/${folderName}/${timestamp}-${file.originalname}`;
+
+        const uploadParams = {
+          Bucket: this.bucketName,
+          Key: key,
+          Body: file.buffer,
+          ContentType: file.mimetype,
+        };
+
+        const uploadResult = await this.s3.upload(uploadParams).promise();
+        fileUrls[folderName] = uploadResult.Location;
+      }
 
       const newPost = new this.postModel({
         ...createPostDto,
-        image: imageUrl, // S3에서 반환된 이미지 URL 저장
+        nutoImage: fileUrls['nuto'] as string,
+        polariodImage: fileUrls['polariod'] as string,
       });
 
       await newPost.save();
       return { success: true, message: 'Post uploaded successfully' };
     } catch (error) {
-      console.error('Error uploading image to S3:', error);
-      throw new InternalServerErrorException('Failed to upload image');
+      console.error('Error uploading images to S3:', error);
+      throw new InternalServerErrorException('Failed to upload images');
     }
   }
 
@@ -66,7 +79,8 @@ export class PostService {
     }
 
     // 이미지 URL에서 S3 Key 추출
-    const key = post.image.split('.com/')[1];
+    const key =
+      post.polariodImage.split('.com/')[1] || post.nutoImage.split('.com/')[1];
 
     // S3에서 이미지 삭제
     try {
