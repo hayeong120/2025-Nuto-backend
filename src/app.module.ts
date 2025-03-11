@@ -22,7 +22,9 @@ import { MongooseModule } from '@nestjs/mongoose';
       envFilePath: `../.env`,
     }),
     NestjsFormDataModule,
-    MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost:27017/default_db'),
+    MongooseModule.forRoot(
+      process.env.MONGO_URI || 'mongodb://localhost:27017/nuto',
+    ),
   ],
   controllers: [AppController],
   providers: [AppService],

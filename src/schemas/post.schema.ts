@@ -9,19 +9,16 @@ export class Post {
   name: string;
 
   @Prop({ required: true })
-  image: string;
+  polariodImage: string;
 
   @Prop({ required: true })
-  content: string;
+  nutoImage: string;
 
   @Prop({ required: true })
   location: string;
 
   @Prop({ required: true })
   password: number;
-
-  @Prop({ required: true })
-  tomato: number;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
